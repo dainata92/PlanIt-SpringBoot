@@ -20,19 +20,22 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
     private final UserDetailsServiceImpl service;
     private final LogDocumentService serviceLog;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
-    public AuthController(UserDetailsServiceImpl service, LogDocumentService serviceLog) {
+    public AuthController(
+            UserDetailsServiceImpl service,
+            LogDocumentService serviceLog,
+            AuthenticationManager authenticationManager,
+            JwtUtil jwtUtil) {
         this.service = service;
         this.serviceLog = serviceLog;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtUtil jwtUtil;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
@@ -40,7 +43,7 @@ public class AuthController {
         Map<String, Object> extras = Map.of("request", request);
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-                
+
         String token = jwtUtil.generateToken(request.getUsername());
         serviceLog.addLog("login called", LocalDate.now(), request.getUsername());
         return ResponseEntity.ok(new AuthResponse(token));
