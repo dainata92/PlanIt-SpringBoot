@@ -29,7 +29,8 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getRequestURI();
-    return path.startsWith("/auth/")
+    return request.getMethod().equalsIgnoreCase("OPTIONS")
+        || path.startsWith("/auth/")
         || path.equals("/api/sign-up")
         || path.equals("/api/action");
 }
@@ -43,11 +44,6 @@ public class JwtFilter extends OncePerRequestFilter {
    @Override
 protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                 FilterChain filterChain) throws ServletException, IOException {
-
-    if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-        response.setStatus(HttpServletResponse.SC_OK);
-        return;
-    }
 
     if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
     filterChain.doFilter(request, response);
