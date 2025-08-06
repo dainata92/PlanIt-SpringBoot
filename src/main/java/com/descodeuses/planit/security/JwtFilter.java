@@ -49,6 +49,11 @@ protected void doFilterInternal(HttpServletRequest request, HttpServletResponse 
         return;
     }
 
+    if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
+    filterChain.doFilter(request, response);
+    return;
+}
+
     final String authHeader = request.getHeader("Authorization");
 
     String username = null;
