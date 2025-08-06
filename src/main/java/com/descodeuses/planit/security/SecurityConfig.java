@@ -23,8 +23,10 @@ import org.springframework.beans.factory.annotation.Value;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${allowCorsOrigin}")
-    private String allowCorsOrigin;
+    //@Value("${allowCorsOrigin}")
+    @Value("#{'${allowCorsOrigin}'.split(',')}")
+    //private String allowCorsOrigin;
+    private List<String> allowCorsOrigins;
 
     @Autowired
     private JwtFilter jwtFilter;
@@ -60,7 +62,8 @@ public class SecurityConfig {
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(allowCorsOrigin));
+        //config.setAllowedOrigins(List.of(allowCorsOrigin));
+        config.setAllowedOrigins(allowCorsOrigins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
