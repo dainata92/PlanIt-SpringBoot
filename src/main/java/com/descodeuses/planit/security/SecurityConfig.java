@@ -37,24 +37,15 @@ public class SecurityConfig {
 		return authConfig.getAuthenticationManager();
 	}
 
-   @Bean
+    @Bean
 public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
     http
         .csrf(csrf -> csrf.disable())
         .cors(cors -> cors.configurationSource(corsConfigurationSource))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .requestMatchers("/auth/**", "/api/sign-up").permitAll()
-
-            // 👇 On autorise PUT et DELETE seulement à ADMIN
-            .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
-            .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
-
-            // 👇 On autorise GET, POST aux deux rôles
-            .requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole("USER", "ADMIN")
-            .requestMatchers(HttpMethod.POST, "/api/**").hasAnyRole("USER", "ADMIN")
-
-            // Toutes les autres requêtes nécessitent l'auth
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // <-- Autorise OPTIONS partout
+            .requestMatchers("/auth/**", "/api/sign-up", "/api/action").permitAll()
+            .requestMatchers("/api/**").hasAnyRole("USER", "ADMIN")
             .anyRequest().authenticated()
         )
         .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
