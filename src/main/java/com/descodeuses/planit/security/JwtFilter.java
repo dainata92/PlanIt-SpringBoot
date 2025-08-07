@@ -67,6 +67,7 @@ protected void doFilterInternal(HttpServletRequest request, HttpServletResponse 
                     userDetails, null, userDetails.getAuthorities());
 
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            logger.info("Authentified user: " + userDetails.getUsername() + ", Authorities: " + userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
     }
