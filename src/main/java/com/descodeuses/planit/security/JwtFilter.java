@@ -54,6 +54,7 @@ protected void doFilterInternal(HttpServletRequest request, HttpServletResponse 
 
     String username = null;
     String jwt = null;
+    
 
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
         jwt = authHeader.substring(7);

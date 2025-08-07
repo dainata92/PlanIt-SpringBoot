@@ -49,7 +49,7 @@ public class AuthController {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        String token = jwtUtil.generateToken(request.getUsername());
+        String token = jwtUtil.generateToken(service.loadUserByUsername(request.getUsername()));
         serviceLog.addLog("login called", LocalDate.now(), request.getUsername());
         return ResponseEntity.ok(new AuthResponse(token));
     }
