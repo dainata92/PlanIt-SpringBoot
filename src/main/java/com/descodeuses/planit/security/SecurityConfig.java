@@ -46,6 +46,7 @@ public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSourc
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // <-- Autorise OPTIONS partout
             .requestMatchers("/auth/**", "/api/sign-up", "/api/action").permitAll()
             .requestMatchers("/api/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .requestMatchers(HttpMethod.DELETE, "/api/action/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .anyRequest().authenticated()
         )
         .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
