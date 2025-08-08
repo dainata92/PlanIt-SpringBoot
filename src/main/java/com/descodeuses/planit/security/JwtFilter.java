@@ -53,7 +53,14 @@ protected void doFilterInternal(HttpServletRequest request, HttpServletResponse 
 
     String username = null;
     String jwt = null;
-    
+
+    logger.info("Request URI: " + request.getRequestURI());
+    logger.info("Authorization header: " + authHeader);
+
+    if (jwt != null) {
+        logger.info("JWT token extracted: " + jwt);
+        logger.info("Username from token: " + username);
+}
 
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
         jwt = authHeader.substring(7);
