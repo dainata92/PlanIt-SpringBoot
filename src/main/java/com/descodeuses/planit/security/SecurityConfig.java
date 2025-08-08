@@ -44,11 +44,11 @@ public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSourc
         .cors(cors -> cors.configurationSource(corsConfigurationSource))
         .authorizeHttpRequests(auth -> auth
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-            .requestMatchers("/auth/**", "/api/sign-up", "/api/action").permitAll()
+            .requestMatchers("/auth/**", "/api/sign-up").permitAll()
             .requestMatchers(HttpMethod.DELETE, "/api/action/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
+            .requestMatchers(HttpMethod.PUT, "/api/action/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .requestMatchers("/api/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
             .anyRequest().authenticated()
-
         )
         .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
