@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
+
     @Value("${jwt.secret}")
     private String secret;
 
@@ -22,18 +23,27 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(UserDetails username) {
+    // Nouvelle méthode qui ajoute les rôles dans le JWT
+    public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(userDetails.getUsername())
+                .claim("roles", userDetails.getAuthorities()
+                        .stream()
+                        .map(auth -> auth.getAuthority())
+                        .collect(Collectors.toList())) // <- ajoute la liste des rôles
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) //adds 1 hour to the current time
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String extractUsername(String token) {
-        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
-                .parseClaimsJws(token).getBody().getSubject();
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
@@ -42,14 +52,12 @@ public class JwtUtil {
     }
 
     private boolean isTokenExpired(String token) {
-        Date expiration = 
-            Jwts.parserBuilder()
+        Date expiration = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getExpiration();
-                
         return expiration.before(new Date());
     }
 }
