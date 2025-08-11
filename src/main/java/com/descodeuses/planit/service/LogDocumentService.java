@@ -15,14 +15,9 @@ public class LogDocumentService {
     
     @Autowired
     private LogDocumentRepository repo;
-    public void addLog(String text, LocalDate timestamp,String username){
-    
-    LogDocument doc = new LogDocument();
-    Map<String, Object> extras = new HashMap<>();
-    extras.put("username", username);
-    doc.setExtras(extras);
-    doc.setText(text);
-    doc.setTimestamp(timestamp);
-    repo.save(doc);
-}
+
+    public void addLog(LogDocument doc) {
+        repo.save(doc);
+    }
+
 }

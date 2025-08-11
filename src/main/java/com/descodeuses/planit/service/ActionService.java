@@ -15,6 +15,7 @@ import com.descodeuses.planit.entity.ActionEntity;
 import com.descodeuses.planit.entity.ContactEntity;
 import com.descodeuses.planit.entity.ProjetEntity;
 import com.descodeuses.planit.entity.UserEntity;
+import com.descodeuses.planit.exceptions.ResourceNotFoundException;
 import com.descodeuses.planit.repository.ActionRepository;
 import com.descodeuses.planit.repository.ContactRepository;
 import com.descodeuses.planit.repository.ProjetRepository;
@@ -208,15 +209,11 @@ public class ActionService {
         return convertToDTO(updatedEntity);
     }
 
-    public ActionDTO delete(Long id) {
+    public void delete(Long id) {
         // Vérifier si l'entité existe
-        ActionEntity deletedEntity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Action not found with id: " + id));
-
-        // Supprimer l'entité
+        if (!repository.existsById(id)) {
+            throw new ResourceNotFoundException("Todo not found with id: " + id);
+        }
         repository.deleteById(id);
-
-        // Retourner l'entité supprimée sous forme de DTO (avant suppression)
-        return convertToDTO(deletedEntity);
     }
 }
