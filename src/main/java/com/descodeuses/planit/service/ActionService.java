@@ -161,7 +161,7 @@ public class ActionService {
 
     public ActionDTO update(Long id, ActionDTO dto) {
         ActionEntity existingEntity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Action not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Action not found with id: " + id));
 
         existingEntity.setTitle(dto.getTitle());
         existingEntity.setCompleted(dto.getCompleted());
