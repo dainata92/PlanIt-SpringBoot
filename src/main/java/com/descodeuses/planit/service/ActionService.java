@@ -159,9 +159,14 @@ public class ActionService {
         return convertToDTO(savedAction);
     }
 
-    public ActionDTO update(Long id, ActionDTO dto) {
+    public ActionDTO update(Long id, ActionDTO dto, UserEntity currentUser) {
         ActionEntity existingEntity = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Action not found with id: " + id));
+
+        if (!"ROLE_ADMIN".equals(currentUser.getRole()) &&
+        (existingEntity.getUser() == null || !existingEntity.getUser().getId().equals(currentUser.getId()))) {
+        throw new RuntimeException("Vous n'avez pas le droit de modifier cette tâche.");
+    }
 
         existingEntity.setTitle(dto.getTitle());
         existingEntity.setCompleted(dto.getCompleted());
@@ -209,11 +214,35 @@ public class ActionService {
         return convertToDTO(updatedEntity);
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, UserEntity currentUser) {
         // Vérifier si l'entité existe
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("Todo not found with id: " + id);
         }
+        ActionEntity entity = repository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Todo not found with id: " + id));
+        
+        if (!"ROLE_ADMIN".equals(currentUser.getRole()) &&
+        (entity.getUser() == null || !entity.getUser().getId().equals(currentUser.getId()))) {
+        throw new RuntimeException("Vous n'avez pas le droit de supprimer cette tâche.");
+    }
         repository.deleteById(id);
     }
+    
+    public List<ActionDTO> getAllByUser(UserEntity user) {
+    List<ActionEntity> entities;
+
+    if ("ROLE_ADMIN".equals(user.getRole())) {
+        entities = repository.findAll(); // admin voit tout
+    } else {
+        entities = repository.findByUserId(user.getId()); // utilisateur voit ses tâches
+    }
+
+    List<ActionDTO> dtos = new ArrayList<>();
+    for (ActionEntity item : entities) {
+        dtos.add(convertToDTO(item));
+    }
+
+    return dtos;
+}
 }

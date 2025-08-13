@@ -1,5 +1,7 @@
 package com.descodeuses.planit.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,5 +12,5 @@ import com.descodeuses.planit.entity.ActionEntity;
 //TYPE ID OBJET = Type du champ id = Long
 @Repository
 public interface ActionRepository extends JpaRepository<ActionEntity, Long> {
-
+    List<ActionEntity> findByUserId(Long userId);
 }
